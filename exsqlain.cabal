@@ -1,0 +1,88 @@
+cabal-version: 1.12
+
+-- This file has been generated from package.yaml by hpack version 0.31.2.
+--
+-- see: https://github.com/sol/hpack
+--
+-- hash: 4a2163745bc1a7426e46c5200e733daa69ff7532756ec43b6c99ff6924e64411
+
+name:           exsqlain
+version:        0.1.0.0
+description:    Please see the README on GitHub at <https://github.com/githubuser/exsqlain#readme>
+homepage:       https://github.com/githubuser/exsqlain#readme
+bug-reports:    https://github.com/githubuser/exsqlain/issues
+author:         Author name here
+maintainer:     example@example.com
+copyright:      2020 Author name here
+license:        BSD3
+license-file:   LICENSE
+build-type:     Simple
+extra-source-files:
+    README.md
+    ChangeLog.md
+data-files:
+    js/dist/js/app.429671bf.js
+    js/dist/js/app.429671bf.js.map
+    js/dist/js/chunk-vendors.7809209f.js
+    js/dist/js/chunk-vendors.7809209f.js.map
+    js/dist/css/app.d40fc157.css
+    js/dist/css/chunk-vendors.90eaa046.css
+    js/dist/favicon.ico
+    js/dist/index.html
+    js/dist/fonts/fontawesome-webfont.674f50d2.eot
+    js/dist/fonts/fontawesome-webfont.af7ae505.woff2
+    js/dist/fonts/fontawesome-webfont.b06871f2.ttf
+    js/dist/fonts/fontawesome-webfont.fee66e71.woff
+
+source-repository head
+  type: git
+  location: https://github.com/githubuser/exsqlain
+
+library
+  exposed-modules:
+      Exsqlain
+      Prelude
+  other-modules:
+      Paths_exsqlain
+  hs-source-dirs:
+      src
+  build-depends:
+      aeson
+    , async
+    , base-noprelude
+    , bytestring
+    , data-default
+    , http-types
+    , postgresql-libpq
+    , relude
+    , wai
+    , wai-extra
+    , wai-middleware-static
+    , warp
+  default-language: Haskell2010
+
+test-suite exsqlain-test
+  type: exitcode-stdio-1.0
+  main-is: Spec.hs
+  other-modules:
+      Paths_exsqlain
+  hs-source-dirs:
+      test
+  ghc-options: -threaded -rtsopts -with-rtsopts=-N
+  build-depends:
+      aeson
+    , async
+    , base-noprelude
+    , bytestring
+    , data-default
+    , exsqlain
+    , hspec
+    , http-types
+    , postgresql-libpq
+    , relude
+    , tmp-postgres
+    , wai
+    , wai-extra
+    , wai-middleware-static
+    , warp
+  default-language: Haskell2010
