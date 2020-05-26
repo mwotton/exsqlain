@@ -15,9 +15,7 @@ import           Data.ByteString.Builder              (byteString,
 import           Data.Default                         (def)
 import           Database.PostgreSQL.LibPQ            (connectdb, exec, finish,
                                                        getvalue)
-import           Exsqlain.Static
 import           Network.HTTP.Types.Status            (status404)
-
 import           Network.Wai                          (Application, pathInfo,
                                                        responseLBS)
 import           Network.Wai.EventSource              (ServerEvent (..),
@@ -26,11 +24,18 @@ import qualified Network.Wai.Handler.Warp             as Warp
 import           Network.Wai.Middleware.RequestLogger (Destination (..),
                                                        destination,
                                                        mkRequestLogger)
+import           Network.Wai.Middleware.Rewrite       (rewriteRoot)
 import           Network.Wai.Middleware.Routed        (routedMiddleware)
 import qualified Network.Wai.Middleware.Static        as Static
 import           System.IO.Unsafe                     (unsafePerformIO)
 
 import           Paths_exsqlain
+
+-- | this is probably the one you want - it uses a static, persistent channel,
+--   so if you're running with ghcid, reloading your specs file will not break
+--   the connection.
+staticExplainQuery :: ByteString -> ByteString -> IO (Either Text ())
+staticExplainQuery connstr query = explainQuery staticChan connstr query
 
 -- currently no connection pooling or even persistent connections.
 -- probably won't matter.
@@ -50,7 +55,7 @@ data QueryPlan =
   }  deriving (Generic,Show)
 instance ToJSON QueryPlan
 
-staticExplainQuery = explainQuery staticChan
+
 
 explainQuery :: Chan ServerEvent -> ByteString -> ByteString -> IO (Either Text ())
 explainQuery chan connstr q = do
@@ -60,18 +65,15 @@ explainQuery chan connstr q = do
       (sendMsg chan . QueryPlan (decodeUtf8 q) . decodeUtf8)
 
 
--- staticSendMsg :: QueryPlan -> IO (Either Text ())
--- staticSendMsg = sendMsg staticChan
-
+-- may want to make this more elaborate
+--  - request ids
+--  - send close message on shutdown
 sendMsg :: Chan ServerEvent -> QueryPlan -> IO (Either Text ())
 sendMsg chan = logTagVia "sent msg" show
   <=< fmap Right . writeChan chan
   .   ServerEvent (Just "visualise") Nothing . (\x->[x]) . (<> "\n") . byteString
   <=< logTagVia "event"  decodeUtf8 . fromLazy . encode
 
-    -- may want to make this more elaborate
-    --  - request ids
-    --  - send close message on shutdown
 
 
 {-# NOINLINE staticChan #-}
@@ -109,10 +111,9 @@ mkServer chan port  = do
   logger <- mkRequestLogger def{ destination=Handle stderr }
   Warp.run port
     . logger
+    . rewriteRoot "index.html"
     . Static.staticPolicy (Static.addBase staticFiles)
     $ respondOn (== ["queryChan"]) chan
---    $ eventSourceAppChan chan
-
 
 respondOn :: ([Text] -> Bool) -> Chan ServerEvent -> Application
 respondOn pathPred chan req respond
