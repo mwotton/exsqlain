@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 4a2163745bc1a7426e46c5200e733daa69ff7532756ec43b6c99ff6924e64411
+-- hash: 3bb7ca0c28d7954a7e0b334f851dbc7d10b2c67a32b65582fbcc0bda031f49c2
 
 name:           exsqlain
 version:        0.1.0.0
@@ -40,7 +40,7 @@ source-repository head
 
 library
   exposed-modules:
-      Exsqlain
+      Database.PostgreSQL.Exsqlain
       Prelude
   other-modules:
       Paths_exsqlain

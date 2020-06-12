@@ -4,7 +4,7 @@ import           Control.Concurrent.Async (withAsync)
 import           Data.ByteString          (ByteString)
 import           Data.Either
 import           Database.Postgres.Temp
-import           Exsqlain
+import           Database.PostgreSQL.Exsqlain
 import           Test.Hspec
 
 main = hspec spec

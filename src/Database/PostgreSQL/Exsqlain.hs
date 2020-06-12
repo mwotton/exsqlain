@@ -2,7 +2,7 @@
 {-# OPTIONS_GHC -fno-warn-deprecations      #-}
 {-# LANGUAGE LambdaCase        #-}
 {-# LANGUAGE OverloadedStrings #-}
-module Exsqlain where
+module Database.PostgreSQL.Exsqlain where
 
 import           Control.Concurrent.Async             (Async, async, cancel)
 import           Control.Concurrent.Chan              (Chan, newChan, readChan,
@@ -55,15 +55,12 @@ data QueryPlan =
   }  deriving (Generic,Show)
 instance ToJSON QueryPlan
 
-
-
 explainQuery :: Chan ServerEvent -> ByteString -> ByteString -> IO (Either Text ())
 explainQuery chan connstr q = do
   log (show (connstr,q))
   runQuery connstr q >>= logTagVia "after runquery" show >>=
     either (pure.Left)
       (sendMsg chan . QueryPlan (decodeUtf8 q) . decodeUtf8)
-
 
 -- may want to make this more elaborate
 --  - request ids
@@ -104,7 +101,6 @@ staticPort = unsafePerformIO $ do
            newServer <- async $ mkServer staticChan newPort
            go newPort newServer controlChan
 
-
 mkServer :: Chan ServerEvent -> Warp.Port -> IO ()
 mkServer chan port  = do
   staticFiles <- getDataFileName "js/dist"
@@ -119,9 +115,6 @@ respondOn :: ([Text] -> Bool) -> Chan ServerEvent -> Application
 respondOn pathPred chan req respond
  | pathPred (pathInfo req) = eventSourceAppChan chan req respond
  | otherwise = respond $ responseLBS status404 [] ""
-
-
--- log = appendFile "/home/mark/sqllogs" . (<>"\n\n")
 
 log :: String -> IO ()
 log = const (pure ())
