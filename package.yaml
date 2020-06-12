@@ -21,17 +21,17 @@ description:         Please see the README on GitHub at <https://github.com/gith
 
 dependencies:
 - aeson
-- base-noprelude
+- base
 - wai-extra
 - postgresql-libpq
 - bytestring
-- relude
 - warp
 - wai-middleware-static
 - async
 - data-default
 - wai
 - http-types
+- text
 
 library:
   source-dirs: src

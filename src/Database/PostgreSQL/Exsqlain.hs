@@ -4,17 +4,25 @@
 {-# LANGUAGE OverloadedStrings #-}
 module Database.PostgreSQL.Exsqlain where
 
+import Prelude hiding (log)
+
 import           Control.Concurrent.Async             (Async, async, cancel)
 import           Control.Concurrent.Chan              (Chan, newChan, readChan,
                                                        writeChan)
 import           Control.Exception                    (bracket)
+import           Control.Monad                        ((<=<))
 import           Data.Aeson                           (ToJSON, encode)
+import qualified Data.ByteString.Char8                as BS8
 import           Data.ByteString                      (ByteString)
+import           Data.ByteString.Lazy                 (toStrict)
 import           Data.ByteString.Builder              (byteString,
                                                        lazyByteString)
+import           Data.Text                            (Text)
+import           Data.Text.Encoding                   (decodeUtf8)                 
 import           Data.Default                         (def)
 import           Database.PostgreSQL.LibPQ            (connectdb, exec, finish,
                                                        getvalue)
+import           GHC.Generics                         (Generic)                 
 import           Network.HTTP.Types.Status            (status404)
 import           Network.Wai                          (Application, pathInfo,
                                                        responseLBS)
@@ -27,6 +35,7 @@ import           Network.Wai.Middleware.RequestLogger (Destination (..),
 import           Network.Wai.Middleware.Rewrite       (rewriteRoot)
 import           Network.Wai.Middleware.Routed        (routedMiddleware)
 import qualified Network.Wai.Middleware.Static        as Static
+import           System.IO                            (stderr)
 import           System.IO.Unsafe                     (unsafePerformIO)
 
 import           Paths_exsqlain
@@ -69,7 +78,7 @@ sendMsg :: Chan ServerEvent -> QueryPlan -> IO (Either Text ())
 sendMsg chan = logTagVia "sent msg" show
   <=< fmap Right . writeChan chan
   .   ServerEvent (Just "visualise") Nothing . (\x->[x]) . (<> "\n") . byteString
-  <=< logTagVia "event"  decodeUtf8 . fromLazy . encode
+  <=< logTagVia "event"  BS8.unpack . toStrict . encode
 
 
 

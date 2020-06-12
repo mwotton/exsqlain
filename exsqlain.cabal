@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 3bb7ca0c28d7954a7e0b334f851dbc7d10b2c67a32b65582fbcc0bda031f49c2
+-- hash: 6e697a90dcb84cc7dafa2ac286d68004a0de0c5ee9848590dc318775d3192ebd
 
 name:           exsqlain
 version:        0.1.0.0
@@ -41,7 +41,6 @@ source-repository head
 library
   exposed-modules:
       Database.PostgreSQL.Exsqlain
-      Prelude
   other-modules:
       Paths_exsqlain
   hs-source-dirs:
@@ -49,12 +48,12 @@ library
   build-depends:
       aeson
     , async
-    , base-noprelude
+    , base
     , bytestring
     , data-default
     , http-types
     , postgresql-libpq
-    , relude
+    , text
     , wai
     , wai-extra
     , wai-middleware-static
@@ -72,14 +71,14 @@ test-suite exsqlain-test
   build-depends:
       aeson
     , async
-    , base-noprelude
+    , base
     , bytestring
     , data-default
     , exsqlain
     , hspec
     , http-types
     , postgresql-libpq
-    , relude
+    , text
     , tmp-postgres
     , wai
     , wai-extra

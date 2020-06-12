@@ -13,7 +13,7 @@ spec = describe "exsqlain" $ do
   it "can run a query" $ do
     r <- runSession (\conn -> runQuery conn "select x.a from generate_series(1,20) as x(a);")
     case r of
-      Right x -> putText "query is ok"
+      Right x -> putStrLn "query is ok"
       _       -> print r
 
     -- don't want to specify the encoding too precisely, we're only going
